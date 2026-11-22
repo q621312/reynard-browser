@@ -38,14 +38,26 @@ jobs:
           make clean
           make
 
-      - name: Collect dylib
+      - name: Collect and validate real dylib
         working-directory: source/ReynardKeepAwake
         run: |
+          set -euo pipefail
           mkdir -p out
-          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \;
+          mapfile -t candidates < <(find .theos -type f -name 'ReynardKeepAwake.dylib' ! -path '*/.dSYM/*')
+          if [ "${#candidates[@]}" -ne 1 ]; then
+            echo "Expected exactly one non-dSYM dylib, found ${#candidates[@]}"
+            printf '%s\\n' "${candidates[@]}"
+            find .theos -type f -name 'ReynardKeepAwake.dylib' -print
+            exit 1
+          fi
+          echo "Selected binary: ${candidates[0]}"
+          file "${candidates[0]}"
+          file "${candidates[0]}" | grep -q 'dynamically linked shared library'
+          cp "${candidates[0]}" out/ReynardKeepAwake.dylib
           cp filter.plist out/
           cp README.md out/
           test -s out/ReynardKeepAwake.dylib
+          file out/ReynardKeepAwake.dylib
 
       - name: Upload dylib artifact
         uses: actions/upload-artifact@v4
