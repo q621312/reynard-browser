@@ -2,7 +2,7 @@
 
 Minimal Objective-C tweak/dylib intended for TrollStore injection into Reynard.
 
-- Target bundle: `com.minh-ton.Reynard`
+- Supported bundles: `com.minh-ton.Reynard` and `com.r2`
 - Architecture: arm64
 - Deployment target: iOS 14+
 - Settings: adds a **保持屏幕常亮** switch as an extra section at the bottom of Reynard's Settings screen.
