@@ -1,0 +1,34 @@
+name: Build Reynard KeepAwake dylib
+on:
+  workflow_dispatch:
+  push:
+    branches: [ keepawake-build ]
+    paths:
+      - 'ReynardKeepAwake/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with Theos container
+        working-directory: ReynardKeepAwake
+        run: |
+          docker pull theos/theos:latest
+          docker run --rm \
+            -v "$PWD:/project" \
+            -w /project \
+            theos/theos:latest \
+            make
+      - name: Collect dylib
+        working-directory: ReynardKeepAwake
+        run: |
+          mkdir -p out
+          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ ;
+          cp filter.plist out/
+          cp README.md out/
+          test -s out/ReynardKeepAwake.dylib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ReynardKeepAwake-dylib
+          path: ReynardKeepAwake/out/
+          if-no-files-found: error
