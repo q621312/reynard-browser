@@ -190,7 +190,17 @@ static void RKAInstallSettingsSwitch(void) {
 
 __attribute__((constructor)) static void ReynardKeepAwakeInit(void) {
     @autoreleasepool {
-        if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.minh-ton.Reynard"]) return;
+        NSString *bundleID = NSBundle.mainBundle.bundleIdentifier;
+        NSSet *supportedBundleIDs = [NSSet setWithObjects:
+            @"com.minh-ton.Reynard",
+            @"com.r2",
+            nil
+        ];
+        if (![supportedBundleIDs containsObject:bundleID]) {
+            NSLog(@"[ReynardKeepAwake] Unsupported bundle ID: %@", bundleID);
+            return;
+        }
+        NSLog(@"[ReynardKeepAwake] Loaded for bundle ID: %@", bundleID);
         dispatch_async(dispatch_get_main_queue(), ^{
             RKAInstallIdleTimerHook();
             if (!RKAHookInstalled) return;
