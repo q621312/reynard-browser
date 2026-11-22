@@ -1,0 +1,39 @@
+name: Build Reynard KeepAwake dylib
+on:
+  workflow_dispatch:
+  push:
+    branches: [ keepawake-build ]
+    paths:
+      - 'ReynardKeepAwake/**'
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout plugin source
+        uses: actions/checkout@v4
+        with:
+          ref: keepawake-build
+          path: source
+      - name: Set up Theos
+        uses: beerpiss/theos-action@v1
+      - name: Build dylib
+        working-directory: source/ReynardKeepAwake
+        run: |
+          echo "Project directory: $PWD"
+          test -f Makefile
+          make clean
+          make
+      - name: Collect dylib
+        working-directory: source/ReynardKeepAwake
+        run: |
+          mkdir -p out
+          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \;
+          cp filter.plist out/
+          cp README.md out/
+          test -s out/ReynardKeepAwake.dylib
+      - name: Upload dylib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReynardKeepAwake-dylib
+          path: source/ReynardKeepAwake/out/
+          if-no-files-found: error
