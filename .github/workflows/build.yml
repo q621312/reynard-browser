@@ -33,7 +33,8 @@ permissions:
 
 jobs:
   prepare:
-    if: ${{ github.repository_owner == 'minh-ton' }}
+    # Allow the upstream owner and this fork to build.
+    if: ${{ github.repository_owner == 'minh-ton' || github.repository_owner == 'q621312' }}
     name: Select build variants
     runs-on: ubuntu-latest
     outputs:
