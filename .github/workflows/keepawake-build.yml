@@ -5,6 +5,7 @@ on:
     branches: [ keepawake-build ]
     paths:
       - 'ReynardKeepAwake/**'
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -14,8 +15,34 @@ jobs:
         with:
           ref: keepawake-build
           path: source
-      - name: Set up Theos
-        uses: beerpiss/theos-action@v1
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential fakeroot git perl unzip curl xz-utils libtinfo6 ldid
+
+      - name: Install Theos
+        run: |
+          export THEOS="$HOME/theos"
+          echo "THEOS=$THEOS" >> "$GITHUB_ENV"
+          git clone --recursive https://github.com/theos/theos.git "$THEOS"
+
+          mkdir -p "$THEOS/toolchain"
+          curl -fL --retry 3 --retry-delay 2 \
+            https://github.com/L1ghtmann/llvm-project/releases/latest/download/iOSToolchain-x86_64.tar.xz \
+            -o /tmp/iOSToolchain-x86_64.tar.xz
+          file /tmp/iOSToolchain-x86_64.tar.xz
+          tar -xJf /tmp/iOSToolchain-x86_64.tar.xz -C "$THEOS/toolchain"
+          test -x "$THEOS/toolchain/linux/iphone/bin/clang"
+
+          "$THEOS/bin/install-sdk" latest
+          test -d "$THEOS/sdks"
+
+      - name: Verify toolchain
+        run: |
+          "$THEOS/toolchain/linux/iphone/bin/clang" --version
+          ls "$THEOS/sdks"
+
       - name: Build dylib
         working-directory: source/ReynardKeepAwake
         run: |
@@ -23,14 +50,16 @@ jobs:
           test -f Makefile
           make clean
           make
+
       - name: Collect dylib
         working-directory: source/ReynardKeepAwake
         run: |
           mkdir -p out
-          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \;
+          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \\;
           cp filter.plist out/
           cp README.md out/
           test -s out/ReynardKeepAwake.dylib
+
       - name: Upload dylib artifact
         uses: actions/upload-artifact@v4
         with:
