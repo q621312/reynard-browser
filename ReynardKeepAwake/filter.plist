@@ -5,6 +5,7 @@
   <key>Bundles</key>
   <array>
     <string>com.minh-ton.Reynard</string>
+    <string>com.r2</string>
   </array>
 </dict>
 </plist>
