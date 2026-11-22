@@ -152,9 +152,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.sccache
-          key: buildcache-sccache-gecko-${{ steps.rust_toolchain.outputs.hash }}-${{ hashFiles('engine/release.txt', 'tools/development/build-gecko.sh') }}
+          key: buildcache-sccache-gecko-${{ matrix.variant }}-${{ steps.rust_toolchain.outputs.hash }}-${{ hashFiles('engine/release.txt', 'tools/development/build-gecko.sh') }}
           restore-keys: |
-            buildcache-sccache-gecko-${{ steps.rust_toolchain.outputs.hash }}-
+            buildcache-sccache-gecko-${{ matrix.variant }}-${{ steps.rust_toolchain.outputs.hash }}-
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.11
