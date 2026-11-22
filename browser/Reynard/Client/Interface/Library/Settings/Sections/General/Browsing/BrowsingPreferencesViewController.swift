@@ -128,8 +128,10 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
             switch ContentRow.allCases[indexPath.row] {
             case .allWebsites:
                 cell.textLabel?.text = NSLocalizedString("Request Desktop Website", comment: "")
+                cell.accessoryType = .disclosureIndicator
             case .pageZoom:
                 cell.textLabel?.text = NSLocalizedString("Page Zoom", comment: "")
+                cell.accessoryType = .disclosureIndicator
             case .reader:
                 cell.textLabel?.text = NSLocalizedString("Reader", comment: "")
                 cell.accessoryType = .disclosureIndicator
