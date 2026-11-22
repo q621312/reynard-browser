@@ -5,6 +5,7 @@ on:
     branches: [ keepawake-build ]
     paths:
       - 'ReynardKeepAwake/**'
+      - '.github/workflows/keepawake-build.yml'
 
 jobs:
   build:
