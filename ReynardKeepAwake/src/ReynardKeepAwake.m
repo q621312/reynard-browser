@@ -62,7 +62,7 @@ __attribute__((constructor)) static void ReynardKeepAwakeInit(void) {
             }];
             [center addObserverForName:UIApplicationDidEnterBackgroundNotification object:nil queue:NSOperationQueue.mainQueue usingBlock:^(__unused NSNotification *note) {
                 RKARestoreAppRequest();
-            });
+            }];
             if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
                 RKAEnableForActiveApp();
             }
