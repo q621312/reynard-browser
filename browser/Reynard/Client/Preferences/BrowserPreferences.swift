@@ -67,6 +67,7 @@ final class BrowserPreferences {
             
             // Browsing
             key("BrowsingSettings", "requestDesktopWebsite"): UIDevice.current.userInterfaceIdiom == .pad,
+            key("BrowsingSettings", "keepScreenAwake"): false,
             key("BrowsingSettings", "showLinkPreviews"): true,
             key("BrowsingSettings", "showImagePreviews"): true,
             key("BrowsingSettings", "openLinksInExternalApps"): true,
@@ -280,6 +281,15 @@ final class BrowserPreferences {
     
     // MARK: - Browsing
     struct BrowsingSettings {
+        static var keepScreenAwake: Bool {
+            get {
+                prefs.bool(forSetting: "BrowsingSettings", key: "keepScreenAwake")
+            }
+            set {
+                prefs.set(newValue, forSetting: "BrowsingSettings", key: "keepScreenAwake")
+            }
+        }
+        
         static var requestDesktopWebsite: Bool {
             get {
                 return prefs.bool(forSetting: "BrowsingSettings", key: "requestDesktopWebsite")

@@ -39,6 +39,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         browserViewController.startScreenOrientationHandling()
         browserViewController.sessionManager.applicationDidBecomeActive()
         browserViewController.tabManager.applicationDidBecomeActive()
+        UIApplication.shared.isIdleTimerDisabled = Prefs.BrowsingSettings.keepScreenAwake
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
@@ -46,6 +47,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
+        UIApplication.shared.isIdleTimerDisabled = false
         browserViewController.stopScreenOrientationHandling()
         browserViewController.sessionManager.applicationWillResignActive()
     }

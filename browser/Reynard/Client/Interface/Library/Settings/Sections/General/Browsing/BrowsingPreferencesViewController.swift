@@ -34,6 +34,7 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
         case allWebsites
         case pageZoom
         case reader
+        case keepScreenAwake
     }
     
     private enum LinksRow: CaseIterable {
@@ -44,6 +45,7 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
     private let showLinkPreviewsSwitch = UISwitch()
     private let showImagePreviewsSwitch = UISwitch()
     private let openLinksInExternalAppsSwitch = UISwitch()
+    private let keepScreenAwakeSwitch = UISwitch()
     
     init() {
         super.init(style: .insetGrouped)
@@ -130,8 +132,12 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
                 cell.textLabel?.text = NSLocalizedString("Page Zoom", comment: "")
             case .reader:
                 cell.textLabel?.text = NSLocalizedString("Reader", comment: "")
+                cell.accessoryType = .disclosureIndicator
+            case .keepScreenAwake:
+                cell.textLabel?.text = NSLocalizedString("Keep Screen Awake", comment: "")
+                cell.selectionStyle = .none
+                cell.accessoryView = keepScreenAwakeSwitch
             }
-            cell.accessoryType = .disclosureIndicator
             return cell
         case .links:
             guard LinksRow.allCases.indices.contains(indexPath.row) else {
@@ -175,6 +181,8 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
                 navigationController?.pushViewController(PageZoomPreferencesViewController(), animated: true)
             case .reader:
                 navigationController?.pushViewController(ReaderPreferencesViewController(), animated: true)
+            case .keepScreenAwake:
+                return
             }
         case .links:
             guard LinksRow.allCases.indices.contains(indexPath.row) else {
@@ -196,12 +204,14 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
         showLinkPreviewsSwitch.addTarget(self, action: #selector(showLinkPreviewsSwitchDidChange(_:)), for: .valueChanged)
         showImagePreviewsSwitch.addTarget(self, action: #selector(showImagePreviewsSwitchDidChange(_:)), for: .valueChanged)
         openLinksInExternalAppsSwitch.addTarget(self, action: #selector(openLinksInExternalAppsSwitchDidChange(_:)), for: .valueChanged)
+        keepScreenAwakeSwitch.addTarget(self, action: #selector(keepScreenAwakeSwitchDidChange(_:)), for: .valueChanged)
     }
     
     private func refreshDisplayedState() {
         showLinkPreviewsSwitch.isOn = Prefs.BrowsingSettings.showLinkPreviews
         showImagePreviewsSwitch.isOn = Prefs.BrowsingSettings.showImagePreviews
         openLinksInExternalAppsSwitch.isOn = Prefs.BrowsingSettings.openLinksInExternalApps
+        keepScreenAwakeSwitch.isOn = Prefs.BrowsingSettings.keepScreenAwake
     }
     
     @objc private func showLinkPreviewsSwitchDidChange(_ sender: UISwitch) {
@@ -214,5 +224,10 @@ final class BrowsingPreferencesViewController: SettingsTableViewController {
     
     @objc private func openLinksInExternalAppsSwitchDidChange(_ sender: UISwitch) {
         Prefs.BrowsingSettings.openLinksInExternalApps = sender.isOn
+    }
+    
+    @objc private func keepScreenAwakeSwitchDidChange(_ sender: UISwitch) {
+        Prefs.BrowsingSettings.keepScreenAwake = sender.isOn
+        UIApplication.shared.isIdleTimerDisabled = sender.isOn && UIApplication.shared.applicationState == .active
     }
 }
