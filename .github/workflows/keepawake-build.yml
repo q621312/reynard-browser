@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: keepawake-build
       - name: Build with Theos container
         working-directory: ReynardKeepAwake
         run: |
@@ -23,7 +25,7 @@ jobs:
         working-directory: ReynardKeepAwake
         run: |
           mkdir -p out
-          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \;
+          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \\;
           cp filter.plist out/
           cp README.md out/
           test -s out/ReynardKeepAwake.dylib
