@@ -16,26 +16,12 @@ jobs:
           ref: keepawake-build
           path: source
 
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential fakeroot git perl unzip curl xz-utils libtinfo6 ldid
-
-      - name: Install Theos
+      - name: Install Theos using official installer
         run: |
           export THEOS="$HOME/theos"
+          bash -c "$(curl -fsSL https://raw.githubusercontent.com/theos/theos/master/bin/install-theos)"
           echo "THEOS=$THEOS" >> "$GITHUB_ENV"
-          git clone --recursive https://github.com/theos/theos.git "$THEOS"
-
-          mkdir -p "$THEOS/toolchain"
-          curl -fL --retry 3 --retry-delay 2 \
-            https://github.com/L1ghtmann/llvm-project/releases/latest/download/iOSToolchain-x86_64.tar.xz \
-            -o /tmp/iOSToolchain-x86_64.tar.xz
-          file /tmp/iOSToolchain-x86_64.tar.xz
-          tar -xJf /tmp/iOSToolchain-x86_64.tar.xz -C "$THEOS/toolchain"
           test -x "$THEOS/toolchain/linux/iphone/bin/clang"
-
-          "$THEOS/bin/install-sdk" latest
           test -d "$THEOS/sdks"
 
       - name: Verify toolchain
@@ -55,7 +41,7 @@ jobs:
         working-directory: source/ReynardKeepAwake
         run: |
           mkdir -p out
-          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \\;
+          find .theos -type f -name 'ReynardKeepAwake.dylib' -exec cp {} out/ \;
           cp filter.plist out/
           cp README.md out/
           test -s out/ReynardKeepAwake.dylib
