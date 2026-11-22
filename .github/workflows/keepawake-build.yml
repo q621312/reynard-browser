@@ -43,17 +43,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p out
-          mapfile -t candidates < <(find .theos -type f -name 'ReynardKeepAwake.dylib' ! -path '*/.dSYM/*')
-          if [ "${#candidates[@]}" -ne 1 ]; then
-            echo "Expected exactly one non-dSYM dylib, found ${#candidates[@]}"
-            printf '%s\\n' "${candidates[@]}"
-            find .theos -type f -name 'ReynardKeepAwake.dylib' -print
-            exit 1
-          fi
-          echo "Selected binary: ${candidates[0]}"
-          file "${candidates[0]}"
-          file "${candidates[0]}" | grep -q 'dynamically linked shared library'
-          cp "${candidates[0]}" out/ReynardKeepAwake.dylib
+          dylib=".theos/obj/debug/arm64/ReynardKeepAwake.dylib"
+          test -s "$dylib"
+          echo "Selected final arm64 binary: $dylib"
+          file "$dylib"
+          file "$dylib" | grep -q 'Mach-O 64-bit.*dynamically linked shared library'
+          cp "$dylib" out/ReynardKeepAwake.dylib
           cp filter.plist out/
           cp README.md out/
           test -s out/ReynardKeepAwake.dylib
