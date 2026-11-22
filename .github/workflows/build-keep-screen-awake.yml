@@ -1,0 +1,16 @@
+name: Build Keep Screen Awake (TrollStore)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      checkout_ref: feature/keep-screen-awake
+      build_normal_ipa: false
+      build_trollstore_tipa: true
+      build_jailbroken_ipa: false
