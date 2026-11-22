@@ -83,8 +83,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     env:
-      SCCACHE_GHA_ENABLED: "true"
-      SCCACHE_GHA_VERSION: ${{ matrix.sccache_namespace }}
+      SCCACHE_DIR: ${{ github.workspace }}/.sccache
+      SCCACHE_CACHE_SIZE: 5G
 
     steps:
       - name: Check out repository
@@ -147,6 +147,14 @@ jobs:
           key: buildcache-idevice-${{ steps.rust_toolchain.outputs.hash }}-${{ hashFiles('support/idevice/Cargo.lock', 'support/idevice/Cargo.toml', 'tools/development/build-idevice.sh') }}
           restore-keys: |
             buildcache-idevice-${{ steps.rust_toolchain.outputs.hash }}-
+
+      - name: Restore local sccache cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: buildcache-sccache-gecko-${{ steps.rust_toolchain.outputs.hash }}-${{ hashFiles('engine/release.txt', 'tools/development/build-gecko.sh') }}
+          restore-keys: |
+            buildcache-sccache-gecko-${{ steps.rust_toolchain.outputs.hash }}-
 
       - name: Set up sccache
         uses: mozilla-actions/sccache-action@v0.0.11
